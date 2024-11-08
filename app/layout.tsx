@@ -10,10 +10,10 @@ import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 const serverConfig = getServerSideConfig();
 
 export const metadata: Metadata = {
-  title: "NextChat",
-  description: "Your personal ChatGPT Chat Bot.",
+  title: "GG",
+  description: "",
   appleWebApp: {
-    title: "NextChat",
+    title: "GG",
     statusBarStyle: "default",
   },
 };
@@ -55,7 +55,7 @@ export default function RootLayout({
             <SpeedInsights />
           </>
         )}
-        {serverConfig?.gtmId && (
+        {/* {serverConfig?.gtmId && (
           <>
             <GoogleTagManager gtmId={serverConfig.gtmId} />
           </>
@@ -64,7 +64,7 @@ export default function RootLayout({
           <>
             <GoogleAnalytics gaId={serverConfig.gaId} />
           </>
-        )}
+        )} */}
       </body>
     </html>
   );

@@ -63,7 +63,7 @@ export function TTSConfigList(props: {
           ))}
         </Select>
       </ListItem>
-      {props.ttsConfig.engine === DEFAULT_TTS_ENGINE && (
+      {props.ttsConfig.engine === "OpenAI-TTS" && (
         <>
           <ListItem title={Locale.Settings.TTS.Model}>
             <Select

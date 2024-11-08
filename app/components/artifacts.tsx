@@ -229,12 +229,12 @@ export function Artifacts() {
   return (
     <div className={styles["artifacts"]}>
       <div className={styles["artifacts-header"]}>
-        <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
+        {/* <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
           <IconButton bordered icon={<GithubIcon />} shadow />
-        </a>
+        </a> */}
         <IconButton
           bordered
-          style={{ marginLeft: 20 }}
+          style={{ marginLeft: 0, marginRight: 10 }}
           icon={<ReloadButtonIcon />}
           shadow
           onClick={() => previewRef.current?.reload()}
