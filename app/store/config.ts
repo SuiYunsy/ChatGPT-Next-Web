@@ -136,7 +136,7 @@ export const TTSConfigValidator = {
     return x as TTSVoiceType;
   },
   speed(x: number) {
-    return limitNumber(x, 0.25, 4.0, 1.0);
+    return limitNumber(x, 0.25, 4.00, 1.00);
   },
 };
 

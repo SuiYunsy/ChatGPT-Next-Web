@@ -561,13 +561,13 @@ export const useChatStore = createPersistStore(
         // get recent messages as much as possible
         const reversedRecentMessages = [];
         for (
-          let i = totalMessageCount - 1, tokenCount = 0;
+          let i = totalMessageCount - 1;//, tokenCount = 0;
           i >= contextStartIndex;// && tokenCount < maxTokenThreshold;
           i -= 1
         ) {
           const msg = messages[i];
           if (!msg || msg.isError) continue;
-          tokenCount += estimateTokenLength(getMessageTextContent(msg));
+          // tokenCount += estimateTokenLength(getMessageTextContent(msg));
           reversedRecentMessages.push(msg);
         }
         // concat all messages

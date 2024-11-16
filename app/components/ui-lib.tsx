@@ -331,6 +331,13 @@ export function showConfirm(content: any) {
     div.remove();
   };
 
+  // 添加点击遮罩层关闭模态框的逻辑，使用 mousedown 事件
+  div.onmousedown = (e) => {
+    if (e.target === div) {
+      closeModal();
+    }
+  };
+
   return new Promise<boolean>((resolve) => {
     root.render(
       <Modal
@@ -402,6 +409,13 @@ export function showPrompt(content: any, value = "", rows = 3) {
   const closeModal = () => {
     root.unmount();
     div.remove();
+  };
+
+  // 添加点击遮罩层关闭模态框的逻辑，使用 mousedown 事件
+  div.onmousedown = (e) => {
+    if (e.target === div) {
+      closeModal();
+    }
   };
 
   return new Promise<string>((resolve) => {
