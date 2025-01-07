@@ -61,8 +61,8 @@ export interface RequestPayload {
   stream?: boolean;
   model: string;
   temperature: number;
-  presence_penalty: number;
-  frequency_penalty: number;
+  presence_penalty?: number;
+  frequency_penalty?: number;
   top_p: number;
   max_tokens?: number;
   max_completion_tokens?: number;
@@ -196,6 +196,7 @@ export class ChatGPTApi implements LLMApi {
 
     const isDalle3 = _isDalle3(options.config.model);
     const isO1 = options.config.model.startsWith("o1");
+    const isGemini = options.config.model.startsWith("gemini");
     if (isDalle3) {
       const prompt = getMessageTextContent(
         options.messages.slice(-1)?.pop() as any,
@@ -227,12 +228,18 @@ export class ChatGPTApi implements LLMApi {
         stream: options.config.stream,
         model: modelConfig.model,
         temperature: !isO1 ? modelConfig.temperature : 1,
-        presence_penalty: !isO1 ? modelConfig.presence_penalty : 0,
-        frequency_penalty: !isO1 ? modelConfig.frequency_penalty : 0,
+        // presence_penalty: !isO1 ? modelConfig.presence_penalty : 0,
+        // frequency_penalty: !isO1 ? modelConfig.frequency_penalty : 0,
         top_p: !isO1 ? modelConfig.top_p : 1,
         // max_tokens: Math.max(modelConfig.max_tokens, 1024),
         // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
       };
+
+      // 非 Gemini 系列模型则加回来这两个参数
+      if (!isGemini) {
+        requestPayload["presence_penalty"] = !isO1 ? modelConfig.presence_penalty : 0;
+        requestPayload["frequency_penalty"] = !isO1 ? modelConfig.frequency_penalty : 0;
+      }
 
       // O1 使用 max_completion_tokens 控制token数 (https://platform.openai.com/docs/guides/reasoning#controlling-costs)
       if (isO1) {

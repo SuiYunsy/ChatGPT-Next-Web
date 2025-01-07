@@ -74,8 +74,8 @@ export const DEFAULT_CONFIG = {
     sendMemory: false,
     historyMessageCount: 8,
     compressMessageLengthThreshold: 2048,
-    compressModel: "gemini-1.5-flash",
-    compressProviderName: "OpenAI",
+    compressModel: "glm-4-flash",
+    compressProviderName: "ChatGLM",
     enableInjectSystemPrompts: true,
     template: config?.template ?? DEFAULT_INPUT_TEMPLATE,
     size: "1024x1024" as ModelSize,
@@ -145,7 +145,10 @@ export const ModalConfigValidator = {
     return x as ModelType;
   },
   max_tokens(x: number) {
-    return limitNumber(x, 0, 512000, 1024);
+    return limitNumber(x, 0, 32768, 1024);
+  },
+  CompressThreshold(x: number) {
+    return limitNumber(x, 0, 32768, 1024);
   },
   presence_penalty(x: number) {
     return limitNumber(x, -2, 2, 0);
