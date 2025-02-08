@@ -1,12 +1,12 @@
 import { useDebouncedCallback } from "use-debounce";
 import React, {
-  useState,
-  useRef,
-  useEffect,
-  useMemo,
-  useCallback,
   Fragment,
   RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 
 import SendWhiteIcon from "../icons/send-white.svg";
@@ -24,6 +24,7 @@ import PromptIcon from "../icons/prompt.svg";
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
 import ResetIcon from "../icons/reload.svg";
+import ReloadIcon from "../icons/reload.svg";
 import BreakIcon from "../icons/break.svg";
 import SettingsIcon from "../icons/chat-settings.svg";
 import DeleteIcon from "../icons/clear.svg";
@@ -45,35 +46,35 @@ import QualityIcon from "../icons/hd.svg";
 import StyleIcon from "../icons/palette.svg";
 import PluginIcon from "../icons/plugin.svg";
 // import ShortcutkeyIcon from "../icons/shortcutkey.svg";
-import ReloadIcon from "../icons/reload.svg";
+import McpToolIcon from "../icons/tool.svg";
 import HeadphoneIcon from "../icons/headphone.svg";
 import {
-  ChatMessage,
-  SubmitKey,
-  useChatStore,
   BOT_HELLO,
+  ChatMessage,
   createMessage,
-  useAccessStore,
-  Theme,
-  useAppConfig,
   DEFAULT_TOPIC,
   ModelType,
+  SubmitKey,
+  Theme,
+  useAccessStore,
+  useAppConfig,
+  useChatStore,
   usePluginStore,
 } from "../store";
 
 import {
-  copyToClipboard,
-  selectOrCopy,
   autoGrowTextArea,
-  useMobileScreen,
-  getMessageTextContent,
+  copyToClipboard,
   getMessageImages,
-  isVisionModel,
+  getMessageTextContent,
   isDalle3,
   // showPlugins,
   safeLocalStorage,
   getModelSizes,
   supportsCustomSize,
+  useMobileScreen,
+  selectOrCopy,
+  isVisionModel,
 } from "../utils";
 
 import { uploadImage as uploadImageRemote } from "@/app/utils/chat";
@@ -104,8 +105,8 @@ import {
   ModelProvider,
   Path,
   REQUEST_TIMEOUT_MS,
-  UNFINISHED_INPUT,
   ServiceProvider,
+  UNFINISHED_INPUT,
 } from "../constant";
 import { Avatar } from "./emoji";
 import { ContextPrompts, MaskAvatar, MaskConfig } from "./mask";
@@ -115,9 +116,7 @@ import { prettyObject } from "../utils/format";
 import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
-import { MultimodalContent } from "../client/api";
-
-import { ClientApi } from "../client/api";
+import { ClientApi, MultimodalContent } from "../client/api";
 import { createTTSPlayer } from "../utils/audio";
 import { MsEdgeTTS, OUTPUT_FORMAT } from "../utils/ms_edge_tts";
 
@@ -130,6 +129,7 @@ import withModalMask from "./withModalMask";
 export const SessionConfigModelWithMask = withModalMask(SessionConfigModel);
 export const EditMessageModalWithMask = withModalMask(EditMessageModal);
 export const ShortcutKeyModalWithMask = withModalMask(ShortcutKeyModal);
+import { getAvailableClientsCount, isMcpEnabled } from "../mcp/actions";
 
 const localStorage = safeLocalStorage();
 
@@ -138,6 +138,34 @@ const ttsPlayer = createTTSPlayer();
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
 });
+
+const MCPAction = () => {
+  const navigate = useNavigate();
+  const [count, setCount] = useState<number>(0);
+  const [mcpEnabled, setMcpEnabled] = useState(false);
+
+  useEffect(() => {
+    const checkMcpStatus = async () => {
+      const enabled = await isMcpEnabled();
+      setMcpEnabled(enabled);
+      if (enabled) {
+        const count = await getAvailableClientsCount();
+        setCount(count);
+      }
+    };
+    checkMcpStatus();
+  }, []);
+
+  if (!mcpEnabled) return null;
+
+  return (
+    <ChatAction
+      onClick={() => navigate(Path.McpMarket)}
+      text={`MCP${count ? ` (${count})` : ""}`}
+      icon={<McpToolIcon />}
+    />
+  );
+};
 
 export function SessionConfigModel(props: { onClose: () => void }) {
   const chatStore = useChatStore();
@@ -459,10 +487,11 @@ export function ChatAction(props: {
 function useScrollToBottom(
   scrollRef: RefObject<HTMLDivElement>,
   detach: boolean = false,
+  // messages: ChatMessage[],
 ) {
   // for auto-scroll
-
   const [autoScroll, setAutoScroll] = useState(true);
+  // const scrollDomToBottom = useCallback(() => {
   function scrollDomToBottom() {
     const dom = scrollRef.current;
     if (dom) {
@@ -471,6 +500,7 @@ function useScrollToBottom(
         dom.scrollTo(0, dom.scrollHeight);
       });
     }
+  // }, [scrollRef]);
   }
 
   // auto scroll
@@ -479,6 +509,15 @@ function useScrollToBottom(
       scrollDomToBottom();
     }
   });
+
+  // auto scroll when messages length changes
+  // const lastMessagesLength = useRef(messages.length);
+  // useEffect(() => {
+  //   if (messages.length > lastMessagesLength.current && !detach) {
+  //     scrollDomToBottom();
+  //   }
+  //   lastMessagesLength.current = messages.length;
+  // }, [messages.length, detach, scrollDomToBottom]);
 
   return {
     scrollRef,
@@ -511,6 +550,7 @@ export function ChatActions(props: {
 
   // switch themes
   const theme = config.theme;
+
   function nextTheme() {
     const themes = [Theme.Auto, Theme.Light, Theme.Dark];
     const themeIndex = themes.indexOf(theme);
@@ -565,7 +605,7 @@ export function ChatActions(props: {
   const currentQuality = session.mask.modelConfig?.quality ?? "standard";
   const currentStyle = session.mask.modelConfig?.style ?? "vivid";
 
-  // const isMobileScreen = useMobileScreen();
+  const isMobileScreen = useMobileScreen();
 
   useEffect(() => {
     const show = isVisionModel(currentModel);
@@ -841,6 +881,7 @@ export function ChatActions(props: {
             icon={<ShortcutkeyIcon />}
           />
         )} */}
+        {!isMobileScreen && <MCPAction />}
       </>
       <div className={styles["chat-input-actions-end"]}>
         {config.realtimeConfig.enable && (
@@ -1034,8 +1075,9 @@ function _Chat() {
   // if user is not typing, should auto scroll to bottom only if already at bottom
   const { setAutoScroll, scrollDomToBottom } = useScrollToBottom(
     scrollRef,
-    isAttachWithTop
+    isAttachWithTop,
     // (isScrolledToBottom || isAttachWithTop) && !isTyping,
+    // session.messages
   );
   const [hitBottom, setHitBottom] = useState(true);
   const isMobileScreen = useMobileScreen();
@@ -1309,6 +1351,7 @@ function _Chat() {
   const accessStore = useAccessStore();
   const [speechStatus, setSpeechStatus] = useState(false);
   const [speechLoading, setSpeechLoading] = useState(false);
+
   async function openaiSpeech(text: string) {
     if (speechStatus) {
       ttsPlayer.stop();
@@ -1408,6 +1451,7 @@ function _Chat() {
   const [msgRenderIndex, _setMsgRenderIndex] = useState(
     Math.max(0, renderMessages.length - CHAT_PAGE_SIZE),
   );
+
   function setMsgRenderIndex(newIndex: number) {
     newIndex = Math.min(renderMessages.length - CHAT_PAGE_SIZE, newIndex);
     newIndex = Math.max(0, newIndex);
@@ -1443,6 +1487,7 @@ function _Chat() {
     setHitBottom(isHitBottom);
     setAutoScroll(isHitBottom);
   };
+
   function scrollToBottom() {
     setMsgRenderIndex(renderMessages.length - CHAT_PAGE_SIZE);
     scrollDomToBottom();
@@ -1807,17 +1852,20 @@ function _Chat() {
                 setAutoScroll(false);
               }}
             >
-              {messages.map((message, i) => {
-                const isUser = message.role === "user";
-                const isContext = i < context.length;
-                const showActions =
-                  i > 0 &&
-                  !(message.preview || message.content.length === 0) &&
-                  !isContext;
-                const showTyping = message.preview || message.streaming;
+              {messages
+                // TODO
+                // .filter((m) => !m.isMcpResponse)
+                .map((message, i) => {
+                  const isUser = message.role === "user";
+                  const isContext = i < context.length;
+                  const showActions =
+                    i > 0 &&
+                    !(message.preview || message.content.length === 0) &&
+                    !isContext;
+                  const showTyping = message.preview || message.streaming;
 
-                const shouldShowClearContextDivider =
-                  i === clearContextIndex - 1;
+                  const shouldShowClearContextDivider =
+                    i === clearContextIndex - 1;
 
                 return (
                   <Fragment key={message.id}>
@@ -1897,7 +1945,9 @@ function _Chat() {
                                   <ChatAction
                                     text={Locale.Chat.Actions.Stop}
                                     icon={<StopIcon />}
-                                    onClick={() => onUserStop(message.id ?? i)}
+                                    onClick={() =>
+                                      onUserStop(message.id ?? i)
+                                    }
                                   />
                                 ) : (
                                   <>
@@ -1910,7 +1960,9 @@ function _Chat() {
                                     <ChatAction
                                       text={Locale.Chat.Actions.Delete}
                                       icon={<DeleteIcon />}
-                                      onClick={() => onDelete(message.id ?? i)}
+                                      onClick={() =>
+                                        onDelete(message.id ?? i)
+                                      }
                                     />
 
                                     {/* <ChatAction
