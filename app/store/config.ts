@@ -64,8 +64,8 @@ export const DEFAULT_CONFIG = {
   models: DEFAULT_MODELS as any as LLMModel[],
 
   modelConfig: {
-    model: "gemini-flash" as ModelType,
-    providerName: "OpenAI" as ServiceProvider,
+    model: "glm-4-flash" as ModelType,
+    providerName: "ChatGLM" as ServiceProvider,
     temperature: 0.5,
     top_p: 1,
     max_tokens: -1,

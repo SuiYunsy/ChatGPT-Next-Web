@@ -240,9 +240,9 @@ function PromptToast(props: {
   showModal?: boolean;
   setShowModal: (_: boolean) => void;
 }) {
-  // const chatStore = useChatStore();
-  // const session = chatStore.currentSession();
-  // const context = session.mask.context;
+  const chatStore = useChatStore();
+  const session = chatStore.currentSession();
+  const context = session.mask.context;
 
   return (
     <div className={styles["prompt-toast"]} key="prompt-toast">

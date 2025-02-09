@@ -21,7 +21,7 @@ import {
 
 import CopyIcon from "../icons/copy.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import ChatGptIcon from "../icons/chatgpt.png";
+// import NextIcon from "../icons/next.svg";
 // import ShareIcon from "../icons/share.svg";
 import BotIcon from "../icons/bot.png";
 
@@ -30,7 +30,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { MessageSelector, useMessageSelector } from "./message-selector";
 import { Avatar } from "./emoji";
 import dynamic from "next/dynamic";
-import NextImage from "next/image";
+// import NextImage from "next/image";
 
 import { toBlob, toPng } from "html-to-image";
 import { DEFAULT_MASK_AVATAR } from "../store/mask";
@@ -41,6 +41,7 @@ import { getClientConfig } from "../config/client";
 import { type ClientApi, getClientApi } from "../client/api";
 import { getMessageTextContent } from "../utils";
 import clsx from "clsx";
+import { MaskAvatar } from "./mask";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -540,12 +541,7 @@ export function ImagePreviewer(props: {
       >
         <div className={styles["chat-info"]}>
           <div className={clsx(styles["logo"], "no-dark")}>
-            <NextImage
-              src={ChatGptIcon.src}
-              alt="logo"
-              width={50}
-              height={50}
-            />
+            {/* <NextIcon width={50} height={50} /> */}
           </div>
 
           <div>
@@ -556,7 +552,10 @@ export function ImagePreviewer(props: {
             <div className={styles["icons"]}>
               <ExportAvatar avatar={config.avatar} />
               <span className={styles["icon-space"]}>&</span>
-              <ExportAvatar avatar={mask.avatar} />
+              <MaskAvatar
+                avatar={mask.avatar}
+                model={mask.modelConfig.model}
+              />
             </div>
           </div>
           <div>
@@ -584,9 +583,16 @@ export function ImagePreviewer(props: {
               key={i}
             >
               <div className={styles["avatar"]}>
-                <ExportAvatar
-                  avatar={m.role === "user" ? config.avatar : mask.avatar}
-                />
+                {m.role === "user" ? (
+                  <ExportAvatar
+                    avatar={config.avatar}
+                  />
+                ) : (
+                  <MaskAvatar
+                    avatar={mask.avatar}
+                    model={m.model || mask.modelConfig.model}
+                  />
+                )}
               </div>
 
               <div className={styles["body"]}>
