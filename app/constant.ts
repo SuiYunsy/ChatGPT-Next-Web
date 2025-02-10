@@ -290,7 +290,7 @@ export const DEFAULT_TTS_VOICES = [
 ];
 
 const openaiModels = [
-  "gpt-4o-mini",
+  // "gpt-4o-mini",
   "dall-e-3",
 ];
 
@@ -372,17 +372,11 @@ const iflytekModels = [
 
 const xAIModes = ["grok-beta"];
 
+*/
 const chatglmModels = [
   "glm-4-plus",
-  "glm-4-0520",
-  "glm-4",
-  "glm-4-air",
-  "glm-4-airx",
-  "glm-4-long",
-  "glm-4-flashx",
   "glm-4-flash",
 ];
-*/
 
 let seq = 1000; // 内置的模型序号生成器从1000开始
 export const DEFAULT_MODELS = [
@@ -506,7 +500,7 @@ export const DEFAULT_MODELS = [
       providerType: "xai",
       sorted: 11,
     },
-  })),
+  })),*/
   ...chatglmModels.map((name) => ({
     name,
     available: true,
@@ -517,7 +511,7 @@ export const DEFAULT_MODELS = [
       providerType: "chatglm",
       sorted: 12,
     },
-  })), */
+  })), 
 ] as const;
 
 export const CHAT_PAGE_SIZE = 15;
