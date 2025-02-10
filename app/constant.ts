@@ -290,12 +290,7 @@ export const DEFAULT_TTS_VOICES = [
 ];
 
 const openaiModels = [
-  "gpt-4",
-  "gpt-4o",
-  "gpt-4-turbo",
-  "gpt-4o-mini",
   "dall-e-3",
-  "o1-mini",
 ];
 
 /* 
